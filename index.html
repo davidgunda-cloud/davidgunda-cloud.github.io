@@ -263,7 +263,8 @@ header.nav .wrap{display:flex;align-items:center;gap:14px;padding-block:10px}
 .ak b{font-family:var(--display);font-weight:600;font-size:1.1rem;line-height:1.25}
 .ak span:last-child{color:var(--muted);font-size:.94rem}
 .ack-note{margin-top:18px;color:var(--muted)}
-.special{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.special{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:16px}
+@media (max-width:980px){.special{grid-template-columns:1fr 1fr}}
 @media (max-width:700px){.special{grid-template-columns:1fr}}
 .sp{background:var(--acacia);color:var(--acacia-ink);border-radius:14px;padding:22px;display:grid;gap:6px;align-content:start}
 .sp .ak-k{color:inherit;opacity:.85}
@@ -579,6 +580,7 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
     <div class="special">
       <div class="sp"><span class="ak-k">Special thanks</span><b>Conservation Officer (CO), Makuyuni Wildlife Park</b><span>and the park staff and rangers, for hosting the fieldwork, guidance on the ground and safety in the field.</span></div>
       <div class="sp"><span class="ak-k">Special thanks</span><b>Conservation Officer (CO), Arusha National Park</b><span>and the park staff and rangers, for access to the park and support during data collection.</span></div>
+      <div class="sp"><span class="ak-k">Special thanks</span><b>Management of Valkó Forest</b><span>and the forestry staff, for permission to work in the forest and support during fieldwork in Hungary.</span></div>
     </div>
     <div class="ack">
       <div class="ak"><span class="ak-k">Scholarship</span><b>Tempus Public Foundation</b><span>Stipendium Hungaricum Scholarship, funding the PhD studies in Hungary</span></div>
