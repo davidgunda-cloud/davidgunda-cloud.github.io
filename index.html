@@ -934,21 +934,21 @@ const pathOf=f=>(typeof PHOTO_DIR==="string"?PHOTO_DIR:"")+f;
 // ---- map (Leaflet + OpenStreetMap) ----
 function initMap(){
   const el=document.getElementById("siteMap");if(!el||!window.L)return;
-  const map=L.map(el,{scrollWheelZoom:false,worldCopyJump:true});
+  const map=L.map(el,{scrollWheelZoom:false,worldCopyJump:true}).setView([10,20],3);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
   const col=getComputedStyle(document.documentElement).getPropertyValue("--acacia").trim()||"#3f7d4a";
   const layers={};
   B1.sites.forEach(s=>{
     const c=L.circle([s.lat,s.lon],{radius:s.rad,color:col,weight:2,fillOpacity:.18}).addTo(map);
     const m=L.marker([s.lat,s.lon]).addTo(map).bindPopup(`<b>${esc(s.n)}</b>${esc(s.r)}<br>${esc(s.d)}`);
-    layers[s.k]={c,m};
+    layers[s.k]={c,m,b:L.latLng(s.lat,s.lon).toBounds(s.rad*2.4)};
   });
-  const all=L.featureGroup(Object.values(layers).map(x=>x.c));
-  const fitAll=()=>map.fitBounds(all.getBounds(),{padding:[30,30]});fitAll();
+  const all=L.latLngBounds([]);Object.values(layers).forEach(x=>all.extend(x.b));
+  const fitAll=()=>map.fitBounds(all,{padding:[30,30]});fitAll();
   document.querySelectorAll(".mapbtn").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll(".mapbtn").forEach(x=>x.setAttribute("aria-pressed",x===b));
     const k=b.dataset.site;if(k==="all"){map.closePopup();fitAll();return}
-    map.flyToBounds(layers[k].c.getBounds(),{padding:[20,20],duration:1.2});setTimeout(()=>layers[k].m.openPopup(),1250);
+    map.flyToBounds(layers[k].b,{padding:[20,20],duration:1.2});setTimeout(()=>layers[k].m.openPopup(),1250);
   }));
 }
 // ---- seasons wheel ----
