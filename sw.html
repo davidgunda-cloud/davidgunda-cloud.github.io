@@ -333,7 +333,21 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
 .lv-foot{font-size:.78rem;color:var(--muted);margin-top:auto}
 .lv.off .lv-now,.lv.off dl,.lv.off .lv-fc{opacity:.45}
 .live-note{font-size:.82rem;color:var(--muted);margin-top:14px}
+
+/* ---------- site visitors ---------- */
+.visits{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.visits[hidden]{display:none!important}
+.visits .vt{font-weight:700}
+.visits .vn{display:inline-flex;align-items:baseline;gap:6px}
+.visits .vn b{font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.visits .vn span{color:var(--muted);font-size:.9rem}
+.visits .dot{width:9px;height:9px;border-radius:50%;background:#2e9e4f;display:inline-block;align-self:center}
+@media (prefers-reduced-motion:no-preference){.visits .dot{animation:vpulse 1.6s ease-in-out infinite}@keyframes vpulse{50%{opacity:.35}}}
+.visits small{flex-basis:100%;color:var(--muted);font-size:.78rem}
+.vpill{display:inline-flex;gap:10px;align-items:center}
+.vpill[hidden]{display:none!important}
 </style>
+<script data-goatcounter="https://davigherbivores.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
 
@@ -466,6 +480,7 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
         <div class="lv-now"><span class="ic"></span><div><div class="lv-t">–</div><div class="lv-d">Inapakia hali ya hewa ya sasa…</div></div></div>
         <dl></dl><div class="lv-fc"></div><div class="lv-foot"></div></article>
     </div>
+    <div class="visits" id="visits" hidden><span class="vt">Tovuti hii</span><span class="vn" data-vwrap="visits" hidden><b data-visits>–</b><span>ziara</span></span><span class="vn" data-vwrap="online" hidden><span class="dot" aria-hidden="true"></span><b data-online>–</b><span data-online-label>wako mtandaoni sasa</span></span><small>Ziara huhesabiwa bila vidakuzi (cookies) na husasishwa kila baada ya saa chache. “Wako mtandaoni sasa” husasishwa moja kwa moja.</small></div>
     <p class="live-note">Data za hali ya hewa: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>, makadirio kwa eneo la jumla la kila sehemu. Takwimu ni za makadirio.</p>
   </div>
 </section>
@@ -655,7 +670,7 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
     <div><h4>Mradi</h4><ul><li><a href="#app">Programu ya uwandani</a></li><li><a href="#gallery">Picha</a></li><li><a href="#news">Habari na machapisho</a></li><li><a href="#thanks">Shukrani</a></li><li><a href="#contact">Mawasiliano</a></li></ul></div>
     <div><h4>Timu ya uwandani</h4><ul><li><a href="https://davigherbivores.org/davigherbivores/">Fungua DaviGherbivores</a></li></ul></div>
   </div>
-  <div class="wrap base"><span>© 2026 Daud M. Gunda</span><span>Picha: Daud M. Gunda na timu ya uwandani</span></div>
+  <div class="wrap base"><span>© 2026 Daud M. Gunda</span><span class="vpill" data-vpill hidden><span data-vwrap="visits" hidden><b data-visits>–</b> ziara</span><span data-vwrap="online" hidden>· <b data-online>–</b> <span data-online-label>wako mtandaoni sasa</span></span></span><span>Picha: Daud M. Gunda na timu ya uwandani</span></div>
 </footer>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Kitazamaji picha">
@@ -803,6 +818,26 @@ if("IntersectionObserver" in window&&!matchMedia("(prefers-reduced-motion: reduc
     }catch(e){card.classList.add("off");card.querySelector(".lv-d").textContent=T.fail}
   }
   document.querySelectorAll(".lv[data-site]").forEach(load);
+})();
+
+/* ---------- site visitors: GoatCounter (total, no cookies) + Firebase Realtime Database (online now) ---------- */
+(()=>{
+  const GC="davigherbivores", ONE='yuko mtandaoni sasa', MANY='wako mtandaoni sasa';
+  const show=(k,v)=>{document.querySelectorAll("[data-"+k+"]").forEach(e=>e.textContent=v);document.querySelectorAll('[data-vwrap="'+k+'"]').forEach(e=>e.hidden=false);
+    document.querySelectorAll("#visits,[data-vpill]").forEach(e=>e.hidden=false)};
+  // total visits
+  fetch("https://"+GC+".goatcounter.com/counter/TOTAL.json").then(r=>r.ok?r.json():Promise.reject(r.status)).then(j=>{if(j&&j.count)show("visits",j.count)}).catch(()=>{});
+  // online now
+  function presence(){
+    try{
+      const app=firebase.apps.find(a=>a.name==="visits")||firebase.initializeApp({apiKey:"AIzaSyDcPfoqQWqxl94l_pOefGlylfMh9nY78Gw",authDomain:"davigherbivores.firebaseapp.com",projectId:"davigherbivores",storageBucket:"davigherbivores.firebasestorage.app",messagingSenderId:"190599803078",appId:"1:190599803078:web:7a43828a1b68dade37a7c7",databaseURL:"https://davigherbivores-default-rtdb.europe-west1.firebasedatabase.app"},"visits");
+      const db=app.database(),list=db.ref("presence"),me=list.push();
+      db.ref(".info/connected").on("value",s=>{if(s.val()===true){me.onDisconnect().remove();me.set(true)}});
+      list.on("value",s=>{const n=s.numChildren();show("online",n);document.querySelectorAll("[data-online-label]").forEach(e=>e.textContent=n===1?ONE:MANY)},()=>{});
+    }catch(e){}
+  }
+  const add=src=>new Promise((ok,no)=>{const sc=document.createElement("script");sc.src=src;sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
+  add("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js").then(()=>add("https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js")).then(presence).catch(()=>{});
 })();
 </script>
 

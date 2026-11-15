@@ -105,7 +105,21 @@ dialog.pv::backdrop{background:rgba(10,18,12,.55)}
 .pv-links{display:flex;flex-wrap:wrap;gap:8px;border-top:1px dashed var(--rule);padding-top:12px}
 .pv-links a{font-size:.85rem;font-weight:600;color:var(--leaf);text-decoration:none;border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper)}
 .pv-links a:hover{border-color:var(--leaf)}
+
+/* ---------- site visitors ---------- */
+.visits{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.visits[hidden]{display:none!important}
+.visits .vt{font-weight:700}
+.visits .vn{display:inline-flex;align-items:baseline;gap:6px}
+.visits .vn b{font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.visits .vn span{color:var(--muted);font-size:.9rem}
+.visits .dot{width:9px;height:9px;border-radius:50%;background:#2e9e4f;display:inline-block;align-self:center}
+@media (prefers-reduced-motion:no-preference){.visits .dot{animation:vpulse 1.6s ease-in-out infinite}@keyframes vpulse{50%{opacity:.35}}}
+.visits small{flex-basis:100%;color:var(--muted);font-size:.78rem}
+.vpill{display:inline-flex;gap:10px;align-items:center}
+.vpill[hidden]{display:none!important}
 </style>
+<script data-goatcounter="https://davigherbivores.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
 
@@ -135,7 +149,7 @@ dialog.pv::backdrop{background:rgba(10,18,12,.55)}
 <main class="wrap" id="list"></main>
 
 
-<footer class="wrap">Daud M. Gunda · DaviGherbivores · davigherbivores.org</footer>
+<footer class="wrap" style="display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between"><span>Daud M. Gunda · DaviGherbivores · davigherbivores.org</span><span class="vpill" data-vpill hidden><span data-vwrap="visits" hidden><b data-visits>–</b> ziara</span><span data-vwrap="online" hidden>· <b data-online>–</b> <span data-online-label>wako mtandaoni sasa</span></span></span></footer>
 
 <dialog class="pv" id="pv" aria-labelledby="pvTitle"><div class="pv-in">
   <div class="pv-hd"><div><h2 id="pvTitle"></h2><div class="pv-meta" id="pvMeta"></div></div><button class="pv-x" id="pvClose" type="button" aria-label="Funga">×</button></div>
@@ -243,6 +257,26 @@ async function openPlant(p){
 }
 document.getElementById("list").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) openPlant(P[+c.dataset.i]); });
 document.getElementById("list").addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("card")) { e.preventDefault(); openPlant(P[+e.target.dataset.i]); } });
+
+/* ---------- site visitors: GoatCounter (total, no cookies) + Firebase Realtime Database (online now) ---------- */
+(()=>{
+  const GC="davigherbivores", ONE='yuko mtandaoni sasa', MANY='wako mtandaoni sasa';
+  const show=(k,v)=>{document.querySelectorAll("[data-"+k+"]").forEach(e=>e.textContent=v);document.querySelectorAll('[data-vwrap="'+k+'"]').forEach(e=>e.hidden=false);
+    document.querySelectorAll("#visits,[data-vpill]").forEach(e=>e.hidden=false)};
+  // total visits
+  fetch("https://"+GC+".goatcounter.com/counter/TOTAL.json").then(r=>r.ok?r.json():Promise.reject(r.status)).then(j=>{if(j&&j.count)show("visits",j.count)}).catch(()=>{});
+  // online now
+  function presence(){
+    try{
+      const app=firebase.apps.find(a=>a.name==="visits")||firebase.initializeApp({apiKey:"AIzaSyDcPfoqQWqxl94l_pOefGlylfMh9nY78Gw",authDomain:"davigherbivores.firebaseapp.com",projectId:"davigherbivores",storageBucket:"davigherbivores.firebasestorage.app",messagingSenderId:"190599803078",appId:"1:190599803078:web:7a43828a1b68dade37a7c7",databaseURL:"https://davigherbivores-default-rtdb.europe-west1.firebasedatabase.app"},"visits");
+      const db=app.database(),list=db.ref("presence"),me=list.push();
+      db.ref(".info/connected").on("value",s=>{if(s.val()===true){me.onDisconnect().remove();me.set(true)}});
+      list.on("value",s=>{const n=s.numChildren();show("online",n);document.querySelectorAll("[data-online-label]").forEach(e=>e.textContent=n===1?ONE:MANY)},()=>{});
+    }catch(e){}
+  }
+  const add=src=>new Promise((ok,no)=>{const sc=document.createElement("script");sc.src=src;sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
+  add("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js").then(()=>add("https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js")).then(presence).catch(()=>{});
+})();
 </script>
 
 </body>
