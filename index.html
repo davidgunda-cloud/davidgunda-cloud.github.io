@@ -399,6 +399,25 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
 .potm img{width:100%;max-width:100%;border-radius:16px;display:block;max-height:560px;object-fit:cover;background:var(--surface)}
 .potm .cap{font-size:1.15rem;font-weight:600;margin:0 0 8px}
 .potm .when{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ochre)}
+
+/* ---------- live status, progress, day/night ---------- */
+.statusbar{border-bottom:1px solid var(--line);background:var(--surface)}
+.statusbar[hidden]{display:none!important}
+.sb-in{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;padding-block:12px}
+.sb-st{display:inline-flex;gap:8px;align-items:center;font-weight:700}
+.sb-st .dot{width:10px;height:10px;border-radius:50%;background:#2e9e4f}
+.sb-st[data-k="lab"] .dot{background:#3b82f6}.sb-st[data-k="writing"] .dot{background:var(--ochre)}.sb-st[data-k="off"] .dot{background:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.sb-st[data-k="field"] .dot{animation:vpulse 1.6s ease-in-out infinite}}
+.sb-st small{font-weight:400;color:var(--muted)}
+.sb-pg{display:flex;gap:10px;align-items:center;flex:1 1 280px;min-width:0}
+.sb-pg .bar{flex:1;height:10px;border-radius:6px;background:var(--line);overflow:hidden;min-width:80px}
+.sb-pg .bar i{display:block;height:100%;background:var(--acacia);border-radius:6px}
+.sb-pg{flex-wrap:wrap}.sb-pg span{font-size:.88rem;color:var(--muted)}
+.sb-pg b{color:var(--fg);font-variant-numeric:tabular-nums}
+.lv-dn{display:inline-flex;gap:4px;align-items:center;font-size:.8rem;color:var(--muted)}
+.lv-alert{background:var(--ochre-soft);color:var(--ochre);border:1px solid var(--ochre);border-radius:10px;padding:6px 10px;font-size:.84rem;font-weight:600}
+.lv-alert[hidden]{display:none!important}
+.lv-moon{font-size:.8rem;color:var(--muted)}
 </style>
 <script data-goatcounter="https://davigherbivores.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
@@ -470,6 +489,7 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
   </div></div>
 </section>
 
+<div class="statusbar" id="statusbar" hidden><div class="wrap sb-in"><span class="sb-st" id="sbSt" hidden><span class="dot" aria-hidden="true"></span><span id="sbStT"></span><small id="sbStW"></small></span><span class="sb-pg" id="sbPg" hidden><span id="sbPgL"></span><span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="sbPgB"><i id="sbPgI" style="width:0"></i></span><span><b id="sbPgN"></b> of plots surveyed</span></span></div></div>
 <!-- ABOUT -->
 <section class="band gut" id="about">
   <div class="wrap about">
@@ -900,6 +920,14 @@ if("IntersectionObserver" in window&&!matchMedia("(prefers-reduced-motion: reduc
       card.querySelector(".lv-fc").innerHTML=[1,2,3].map(n=>{const dt=new Date(d.time[i+n]+"T12:00:00Z");const [kk,tt]=W(d.weather_code[i+n]);
         return `<div title="${tt}"><b>${T.days[dt.getUTCDay()]}</b>${svg(kk)}${Math.round(d.temperature_2m_max[i+n])}° / ${Math.round(d.temperature_2m_min[i+n])}°<br>${r1(d.precipitation_sum[i+n])} mm</div>`}).join("");
       card.querySelector(".lv-foot").textContent=T.upd+" "+card.querySelector(".lt").textContent+" ("+(SW?"saa za eneo":"local time")+")";
+      {const DN={"day": "Day", "night": "Night", "moon": ["New moon", "Waxing crescent", "First quarter", "Waxing gibbous", "Full moon", "Waning gibbous", "Last quarter", "Waning crescent"], "rain": "Heavy rain expected tomorrow", "storm": "Thunderstorms expected tomorrow"};const off=(j.utc_offset_seconds||0)*1000,sr=Date.parse(d.sunrise[i]+":00Z")-off,ss=Date.parse(d.sunset[i]+":00Z")-off;
+       const tick=()=>{const n2=new Date(Date.now()+off);card.querySelector(".lt").textContent=String(n2.getUTCHours()).padStart(2,"0")+":"+String(n2.getUTCMinutes()).padStart(2,"0");
+         const day=Date.now()>=sr&&Date.now()<ss;let el=card.querySelector(".lv-dn");if(!el){el=document.createElement("span");el.className="lv-dn";card.querySelector(".where").append(" · ",el)}
+         el.textContent=(day?"☀ ":"☾ ")+(day?DN.day:DN.night)};tick();clearInterval(card._t);card._t=setInterval(tick,30000);
+       const ph=((Date.now()/864e5-6.8)%29.530588+29.530588)%29.530588,mi=Math.floor((ph/29.530588)*8+.5)%8,MI=["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
+       let mo=card.querySelector(".lv-moon");if(!mo){mo=document.createElement("div");mo.className="lv-moon";card.querySelector(".lv-foot").before(mo)}mo.textContent=MI[mi]+" "+DN.moon[mi];
+       const tc=d.weather_code[i+1],tp=d.precipitation_sum[i+1];let al=card.querySelector(".lv-alert");if(!al){al=document.createElement("div");al.className="lv-alert";card.querySelector(".lv-fc").before(al)}
+       al.hidden=!(tc>=95||tp>=20);al.textContent=tc>=95?"⚡ "+DN.storm:"🌧 "+DN.rain+" ("+Math.round(tp)+" mm)";}
       card.classList.remove("off");
     }catch(e){card.classList.add("off");card.querySelector(".lv-d").textContent=T.fail}
   }
@@ -1013,6 +1041,19 @@ const lsc=document.createElement("script");lsc.src="https://cdnjs.cloudflare.com
     const x=new Date(dt);document.getElementById("potmImg").src=p;document.getElementById("potmImg").alt=cap;document.getElementById("potmCap").textContent=cap;
     document.getElementById("potmWhen").textContent=isNaN(x)?"":M[x.getMonth()]+" "+x.getFullYear();document.getElementById("potm").hidden=false;
   }).catch(()=>{});
+})();
+
+/* ---------- field status and survey progress (set from the DaviGherbivores app) ---------- */
+(()=>{
+  const S2={"day": "Day", "night": "Night", "moon": ["New moon", "Waxing crescent", "First quarter", "Waxing gibbous", "Full moon", "Waning gibbous", "Last quarter", "Waning crescent"], "rain": "Heavy rain expected tomorrow", "storm": "Thunderstorms expected tomorrow", "st": {"field": "Team in the field", "lab": "Working in the laboratory", "writing": "Analysing and writing", "off": "Between field seasons"}, "upd": "Updated", "prog": "of plots surveyed", "plots": "plots"},FS="https://firestore.googleapis.com/v1/projects/davigherbivores/databases/(default)/documents",K="AIzaSyDcPfoqQWqxl94l_pOefGlylfMh9nY78Gw";
+  const v=f=>f?(f.stringValue??f.integerValue??f.doubleValue??null):null;const $=id=>document.getElementById(id);
+  const SW=document.documentElement.lang==="sw";
+  const show=()=>{$("statusbar").hidden=false};
+  fetch(FS+"/site/status?key="+K).then(r=>r.ok?r.json():Promise.reject()).then(d=>{const f=d.fields||{},k=v(f.state);if(!S2.st[k])return;
+    $("sbSt").dataset.k=k;$("sbStT").textContent=S2.st[k];const w=(SW&&v(f.whereSw))||v(f.where);$("sbStW").textContent=w?"· "+w:"";$("sbSt").hidden=false;show()}).catch(()=>{});
+  fetch(FS+"/site/progress?key="+K).then(r=>r.ok?r.json():Promise.reject()).then(d=>{const f=d.fields||{},pc=Math.max(0,Math.min(100,Math.round(+v(f.percent)))),nm=(SW&&v(f.nameSw))||v(f.name);
+    if(!nm||isNaN(pc)||v(f.active)===null&&false)return;if(f.active&&f.active.booleanValue===false)return;
+    $("sbPgL").textContent=nm;$("sbPgI").style.width=pc+"%";$("sbPgB").setAttribute("aria-valuenow",pc);$("sbPgN").textContent=pc+"%";$("sbPg").hidden=false;show()}).catch(()=>{});
 })();
 </script>
 
