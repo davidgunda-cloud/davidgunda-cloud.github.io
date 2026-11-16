@@ -457,6 +457,16 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
 .sight .tx{padding:10px;display:grid;gap:2px}.sight b{font-size:.95rem}.sight i{font-size:.82rem;color:var(--muted)}
 .sight small{font-size:.72rem;color:var(--muted);overflow-wrap:anywhere}
 .sights-st{color:var(--muted);padding:20px 0}
+.msgf{margin-top:28px;max-width:680px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:12px}
+.msgf h3{margin:0}.msgf p{margin:0;color:var(--muted)}
+.msgf .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.msgf label{display:grid;gap:6px;font-weight:600;font-size:.95rem;min-width:0}
+.msgf input,.msgf textarea{font:inherit;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;box-sizing:border-box}
+.msgf input:focus,.msgf textarea:focus{outline:2px solid var(--acacia);outline-offset:1px;border-color:var(--acacia)}
+.msgf textarea{min-height:130px;resize:vertical}
+.msgf .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.msgf .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.msgf .st{font-weight:600;color:var(--fg)}.msgf .st.ok{color:var(--acacia)}
 </style>
 <script data-goatcounter="https://davigherbivores.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
@@ -790,8 +800,16 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
       <div class="person"><div class="av" aria-hidden="true">AE</div><div><span class="prole">Mshauri</span><b>Abraham Eustace</b><span>Mamlaka ya Usimamizi wa Wanyamapori Tanzania (TAWA), Makao Makuu</span></div></div>
       <!-- Add a supervisor or partner:
       <div class="person"><div class="av" aria-hidden="true">AB</div><div><b>Name</b><span>Role, institution</span></div></div> -->
-      <div class="contact"><h3>Wasiliana nasi</h3><p id="contactText">Kwa taarifa yoyote kuhusu wanyamapori wala-mimea au kupata DaviGherbivores, wasiliana na Daud M. Gunda.</p><p style="color:var(--muted)">Daud M. Gunda, Chuo Kikuu cha Kilimo na Sayansi za Maisha cha Hungaria (MATE), Gödöllő, Hungaria</p></div>
+      <div class="contact"><h3>Wasiliana nasi</h3><p id="contactText">Kwa taarifa yoyote kuhusu wanyamapori wala-mimea au kupata DaviGherbivores, wasiliana na Daud M. Gunda kwa kutumia fomu iliyo hapa chini.</p><p style="color:var(--muted)">Daud M. Gunda, Chuo Kikuu cha Kilimo na Sayansi za Maisha cha Hungaria (MATE), Gödöllő, Hungaria</p></div>
     </div>
+    <form class="msgf" id="msgForm" novalidate>
+      <h3>Tuma ujumbe</h3><p>Mwandikie Daud M. Gunda moja kwa moja kutoka ukurasa huu. Barua pepe yako itatumika tu kukujibu.</p>
+      <div class="two"><label>Jina lako<input name="name" maxlength="100" autocomplete="name" required></label>
+      <label>Barua pepe yako<input name="email" type="email" maxlength="150" autocomplete="email" required></label></div>
+      <label>Ujumbe<textarea name="msg" maxlength="3000" required></textarea></label>
+      <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="row"><button class="btn pri" type="submit">Tuma ujumbe</button><span class="st" role="status" aria-live="polite"></span></div>
+    </form>
   </div>
 </section>
 
@@ -1167,5 +1185,22 @@ setTimeout(()=>document.querySelectorAll(".lv[data-site]").forEach(extras),1500)
 })();
 </script>
 
+<script>
+/* ---------- contact form: messages go to the project leader's inbox in the DaviGherbivores app ---------- */
+(()=>{const f=document.getElementById("msgForm");if(!f)return;const T={"ok": "Asante! Ujumbe wako umetumwa. Daud atakujibu kwa barua pepe.", "bad": "Tafadhali jaza jina lako, barua pepe sahihi na ujumbe (angalau maneno machache).", "wait": "Tafadhali subiri dakika moja kabla ya kutuma ujumbe mwingine.", "err": "Ujumbe haukuweza kutumwa. Angalia mtandao wako kisha ujaribu tena.", "sending": "Inatuma…"},t0=Date.now(),st=f.querySelector(".st"),btn=f.querySelector("button");
+  const FS="https://firestore.googleapis.com/v1/projects/davigherbivores/databases/(default)/documents/messages?key=AIzaSyDcPfoqQWqxl94l_pOefGlylfMh9nY78Gw";
+  const say=(m,ok)=>{st.textContent=m;st.classList.toggle("ok",!!ok)};
+  f.addEventListener("submit",async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));
+    const name=(d.name||"").trim(),email=(d.email||"").trim(),msg=(d.msg||"").trim();
+    if(d.website||Date.now()-t0<3000){say(T.ok,true);f.reset();return}
+    if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||msg.length<5){say(T.bad);return}
+    let last=0;try{last=+localStorage.getItem("dg_msg_t")||0}catch(_){}
+    if(Date.now()-last<60000){say(T.wait);return}
+    btn.disabled=true;say(T.sending);
+    try{const r=await fetch(FS,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{name:{stringValue:name},email:{stringValue:email},msg:{stringValue:msg},lang:{stringValue:"sw"},read:{booleanValue:false},t:{timestampValue:new Date().toISOString()}}})});
+      if(!r.ok)throw 0;try{localStorage.setItem("dg_msg_t",String(Date.now()))}catch(_){}
+      f.reset();say(T.ok,true);try{window.goatcounter&&goatcounter.count&&goatcounter.count({path:"message-sent",event:true})}catch(_){}}
+    catch(_){say(T.err)}finally{btn.disabled=false}})})();
+</script>
 </body>
 </html>
