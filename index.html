@@ -440,6 +440,23 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
 .share a:hover,.share button:hover{opacity:1}
 .share svg{width:16px;height:16px;fill:currentColor}
 .share .sh-msg{font-size:.82rem;opacity:.8}
+
+/* ---------- field-site extras: soil, fire, air; sightings ---------- */
+.lv-x{display:grid;gap:6px;font-size:.84rem}
+.lv-x .row2{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.lv-x .row2 span{color:var(--muted)}
+.lv-x .meter{height:8px;border-radius:5px;background:var(--line);overflow:hidden}
+.lv-x .meter i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#c98a3b,#7fb069,#3f7dc0)}
+.lv-x .fire{color:#b23b1a;font-weight:600}.lv-x .fire.ok{color:var(--muted);font-weight:400}
+.sight-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.sight-tabs button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:7px 14px;cursor:pointer}
+.sight-tabs button[aria-pressed="true"]{background:var(--acacia);color:var(--acacia-ink);border-color:var(--acacia)}
+.sights{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.sight{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0;text-decoration:none;color:inherit}
+.sight .ph{aspect-ratio:1/1;background:var(--bg);max-width:100%}.sight img{width:100%;height:100%;object-fit:cover;display:block}
+.sight .tx{padding:10px;display:grid;gap:2px}.sight b{font-size:.95rem}.sight i{font-size:.82rem;color:var(--muted)}
+.sight small{font-size:.72rem;color:var(--muted);overflow-wrap:anywhere}
+.sights-st{color:var(--muted);padding:20px 0}
 </style>
 <script data-goatcounter="https://davigherbivores.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
@@ -577,6 +594,16 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
     </div>
     <div class="visits" id="visits" hidden><span class="vt">This website</span><span class="vn" data-vwrap="visits" hidden><b data-visits>–</b><span>visits</span></span><span class="vn" data-vwrap="online" hidden><span class="dot" aria-hidden="true"></span><b data-online>–</b><span data-online-label>online now</span></span><small>Visits are counted without cookies and refresh every few hours. “Online now” updates live.</small></div>
     <p class="live-note">Weather data: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>, modelled for the general area of each site. Values are approximate.</p>
+  </div>
+</section>
+
+<!-- SIGHTINGS -->
+<section class="band alt gut" id="sightings">
+  <div class="wrap">
+    <div class="head"><div><p class="eyebrow">Seen recently</p><h2>Wildlife and plants near the study sites</h2></div><p>The latest sightings shared by visitors, guides and naturalists on iNaturalist within about 10 km of each site. Updated every time this page opens.</p></div>
+    <div class="sight-tabs" role="group" aria-label="Wildlife and plants near the study sites"><button type="button" data-k="mk" aria-pressed="true">Makuyuni</button><button type="button" data-k="ar" aria-pressed="false">Arusha National Park</button><button type="button" data-k="va" aria-pressed="false">Valkó Forest</button></div>
+    <div class="sights" id="sights" aria-live="polite"></div>
+    <p style="margin-top:12px"><a id="sightMore" href="https://www.inaturalist.org" target="_blank" rel="noopener">See more on iNaturalist →</a></p>
   </div>
 </section>
 
@@ -986,7 +1013,11 @@ const pathOf=f=>(typeof PHOTO_DIR==="string"?PHOTO_DIR:"")+f;
 function initMap(){
   const el=document.getElementById("siteMap");if(!el||!window.L)return;
   const map=L.map(el,{scrollWheelZoom:false,worldCopyJump:true}).setView([10,20],3);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
+  const osm=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
+  const satDay=new Date(Date.now()-864e5).toISOString().slice(0,10);
+  const sat=L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/"+satDay+"/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",{maxNativeZoom:9,maxZoom:17,attribution:'Imagery: <a href="https://earthdata.nasa.gov" target="_blank" rel="noopener">NASA EOSDIS GIBS</a> '+satDay});
+  L.control.layers({"Map":osm,"Satellite view":sat},null,{collapsed:false,position:"topright"}).addTo(map);
+  map.on("baselayerchange",e=>{const n=document.querySelector(".mapnote");if(n){n.dataset.base=n.dataset.base||n.textContent;n.textContent=e.layer===sat?"NASA daily satellite image from {d}. Clouds can hide the ground.".replace("{d}",satDay):n.dataset.base}});
   const col=getComputedStyle(document.documentElement).getPropertyValue("--acacia").trim()||"#3f7d4a";
   const layers={};
   B1.sites.forEach(s=>{
@@ -1095,6 +1126,44 @@ window.dgShare=function(el,text,url,label){
     try{await navigator.clipboard.writeText(url);el.querySelector(".sh-msg").textContent=S.copied}catch(_){el.querySelector(".sh-msg").textContent=url}};
 };
 document.querySelectorAll("[data-share]").forEach(el=>dgShare(el,el.dataset.text,el.dataset.url,el.dataset.label));
+
+/* ---------- field-site extras: sightings (iNaturalist), soil (Open-Meteo), fires (NASA FIRMS), air and pollen (Open-Meteo) ---------- */
+(()=>{
+const X={"s_eb": "Seen recently", "s_h": "Wildlife and plants near the study sites", "s_p": "The latest sightings shared by visitors, guides and naturalists on iNaturalist within about 10 km of each site. Updated every time this page opens.", "s_none": "No recent sightings shared near this site.", "s_fail": "Sightings could not be loaded right now.", "s_by": "Photo", "s_more": "See more on iNaturalist", "soil": "Soil moisture", "soilL": ["Very dry", "Dry", "Moist", "Wet"], "et0": "Water lost to air today", "fire": "{n} fire{s} detected within 30 km in the last 48 h", "nofire": "No fires detected nearby in the last 48 h", "aqi": "Air quality", "aqiL": ["Good", "Fair", "Moderate", "Poor", "Very poor", "Extremely poor"], "pollen": "Pollen", "pol": {"alder_pollen": "alder", "birch_pollen": "birch", "grass_pollen": "grass", "mugwort_pollen": "mugwort", "ragweed_pollen": "ragweed"}, "polLow": "low", "polNone": "none in the air"},FIRMS_KEY="978708264ad843daa1d24534ec6599ac",LANG=document.documentElement.lang==="sw"?"sw":"en";
+const SITES={mk:{lat:-3.58,lon:36.10,tz:true},ar:{lat:-3.25,lon:36.86,tz:true},va:{lat:47.57,lon:19.49,tz:false}};
+const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const get=async u=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),12000);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw r.status;return r}finally{clearTimeout(t)}};
+// --- sightings
+const box=document.getElementById("sights"),cache={};
+async function sights(k){const s=SITES[k];box.innerHTML='<p class="sights-st">…</p>';
+  const q=new URLSearchParams({lat:s.lat,lng:s.lon,radius:"10",photos:"true",order_by:"observed_on",order:"desc",per_page:"12",locale:LANG,quality_grade:"research,needs_id",geoprivacy:"open"});
+  document.getElementById("sightMore").href="https://www.inaturalist.org/observations?"+new URLSearchParams({lat:s.lat,lng:s.lon,radius:"10"});
+  try{const j=cache[k]||(cache[k]=await (await get("https://api.inaturalist.org/v1/observations?"+q)).json());
+    const items=(j.results||[]).filter(o=>o.photos&&o.photos[0]&&o.photos[0].license_code&&o.taxon);
+    box.innerHTML=items.length?items.map(o=>{const p=o.photos[0],t=o.taxon,img=String(p.url||"").replace("square","medium");
+      return `<a class="sight" href="https://www.inaturalist.org/observations/${o.id}" target="_blank" rel="noopener"><div class="ph"><img src="${esc(img)}" alt="${esc(t.preferred_common_name||t.name)}" loading="lazy"></div>
+        <div class="tx"><b>${esc(t.preferred_common_name||t.name)}</b><i>${esc(t.name)}</i><small>${esc(o.observed_on||"")} · ${esc(p.attribution||"")}</small></div></a>`}).join(""):`<p class="sights-st">${X.s_none}</p>`;
+  }catch(e){box.innerHTML=`<p class="sights-st">${X.s_fail}</p>`}}
+document.querySelectorAll(".sight-tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".sight-tabs button").forEach(x=>x.setAttribute("aria-pressed",x===b));sights(b.dataset.k)});
+if(box)sights("mk");
+// --- extras in each live card
+async function extras(card){const k=card.dataset.site,s=SITES[k];if(!s)return;const out=[];
+  try{const j=await (await get("https://api.open-meteo.com/v1/forecast?"+new URLSearchParams({latitude:s.lat,longitude:s.lon,hourly:"soil_moisture_3_to_9cm",daily:"et0_fao_evapotranspiration",forecast_days:"1",timezone:"auto"}))).json();
+    const H=j.hourly,hr=new Date(Date.now()+(j.utc_offset_seconds||0)*1000).getUTCHours(),sm=H.soil_moisture_3_to_9cm[Math.min(hr,H.time.length-1)];
+    if(sm!=null){const lv=sm<.12?0:sm<.2?1:sm<.3?2:3,pc=Math.max(4,Math.min(100,Math.round(sm/.45*100)));
+      out.push(`<div class="row2"><b>${X.soil}</b><span>${X.soilL[lv]} · ${sm.toFixed(2)} m³/m³</span></div><div class="meter" role="img" aria-label="${X.soil}: ${X.soilL[lv]}"><i style="width:${pc}%"></i></div>`)}
+    const et=j.daily.et0_fao_evapotranspiration[0];if(et!=null)out.push(`<div class="row2"><span>${X.et0}</span><b>${et.toFixed(1)} mm</b></div>`)}catch(e){}
+  if(s.tz&&FIRMS_KEY){try{const d=.28,bb=[s.lon-d,s.lat-d,s.lon+d,s.lat+d].map(v=>v.toFixed(2)).join(",");
+      const txt=await (await get(`https://firms.modaps.eosdis.nasa.gov/api/area/csv/${FIRMS_KEY}/VIIRS_SNPP_NRT/${bb}/2`)).text();
+      if(!/^latitude/i.test(txt.trim()))throw 0;const n=Math.max(0,txt.trim().split("\n").length-1);
+      out.push(n?`<div class="fire">🔥 ${X.fire.replace("{n}",n).replace("{s}",n===1?"":"s")}</div>`:`<div class="fire ok">✓ ${X.nofire}</div>`)}catch(e){}}
+  if(!s.tz){try{const j=await (await get("https://air-quality-api.open-meteo.com/v1/air-quality?"+new URLSearchParams({latitude:s.lat,longitude:s.lon,current:"european_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,ragweed_pollen",timezone:"auto"}))).json();
+      const c=j.current||{},a=c.european_aqi;if(a!=null){const i=a<=20?0:a<=40?1:a<=60?2:a<=80?3:a<=100?4:5;out.push(`<div class="row2"><span>${X.aqi}</span><b>${X.aqiL[i]} (${Math.round(a)})</b></div>`)}
+      const pol=Object.keys(X.pol).map(k2=>[k2,c[k2]]).filter(([,v])=>v!=null&&v>0).sort((p,q)=>q[1]-p[1]);
+      out.push(`<div class="row2"><span>${X.pollen}</span><b>${pol.length?pol.slice(0,2).map(([k2,v])=>X.pol[k2]+" "+Math.round(v)).join(", ")+" /m³":X.polNone}</b></div>`)}catch(e){}}
+  if(!out.length)return;let el=card.querySelector(".lv-x");if(!el){el=document.createElement("div");el.className="lv-x";const m=card.querySelector(".lv-moon")||card.querySelector(".lv-foot");m.before(el)}el.innerHTML=out.join("")}
+setTimeout(()=>document.querySelectorAll(".lv[data-site]").forEach(extras),1500);
+})();
 </script>
 
 </body>
