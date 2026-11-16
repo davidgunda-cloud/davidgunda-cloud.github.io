@@ -1016,8 +1016,9 @@ function initMap(){
   const osm=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
   const satDay=new Date(Date.now()-864e5).toISOString().slice(0,10);
   const sat=L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_NOAA20_CorrectedReflectance_TrueColor/default/"+satDay+"/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",{maxNativeZoom:9,maxZoom:17,attribution:'Imagery: <a href="https://earthdata.nasa.gov" target="_blank" rel="noopener">NASA EOSDIS GIBS</a> '+satDay});
-  L.control.layers({"Map":osm,"Satellite view":sat},null,{collapsed:false,position:"topright"}).addTo(map);
-  map.on("baselayerchange",e=>{const n=document.querySelector(".mapnote");if(n){n.dataset.base=n.dataset.base||n.textContent;n.textContent=e.layer===sat?"NASA daily satellite image from {d}. Clouds can hide the ground.".replace("{d}",satDay):n.dataset.base}});
+  const esri=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:17,attribution:'Imagery &copy; <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics'});
+  L.control.layers({"Map":osm,"Satellite (detailed)":esri,"Yesterday from NASA":sat},null,{collapsed:false,position:"topright"}).addTo(map);
+  map.on("baselayerchange",e=>{const n=document.querySelector(".mapnote");if(n){n.dataset.base=n.dataset.base||n.textContent;if(e.layer===sat&&map.getZoom()>9)map.setZoom(9);n.textContent=e.layer===esri?"Detailed satellite photos (taken on different dates over recent years, not today).":e.layer===sat?"NASA daily satellite image from {d}. Clouds can hide the ground.".replace("{d}",satDay):n.dataset.base}});
   const col=getComputedStyle(document.documentElement).getPropertyValue("--acacia").trim()||"#3f7d4a";
   const layers={};
   B1.sites.forEach(s=>{
