@@ -4,6 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="alternate" hreflang="en" href="https://davigherbivores.org/"><link rel="alternate" hreflang="sw" href="https://davigherbivores.org/sw.html">
+<link rel="canonical" href="https://davigherbivores.org/sw.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DaviGherbivores">
+<meta property="og:title" content="Uchaguzi wa Chakula kwa Wanyamapori · DaviGherbivores">
+<meta property="og:description" content="Wanyamapori wenye kwato huchagua kula nini? Utafiti wa PhD wa Daud M. Gunda katika Hifadhi ya Wanyamapori Makuyuni, Hifadhi ya Taifa ya Arusha na Msitu wa Valkó, Hungaria.">
+<meta property="og:url" content="https://davigherbivores.org/sw.html">
+<meta property="og:image" content="https://davigherbivores.org/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="sw_TZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Uchaguzi wa Chakula kwa Wanyamapori · DaviGherbivores">
+<meta name="twitter:description" content="Wanyamapori wenye kwato huchagua kula nini? Utafiti wa PhD wa Daud M. Gunda katika Hifadhi ya Wanyamapori Makuyuni, Hifadhi ya Taifa ya Arusha na Msitu wa Valkó, Hungaria.">
+<meta name="twitter:image" content="https://davigherbivores.org/og-image.jpg">
 <title>Uchaguzi wa Chakula kwa Wanyamapori</title>
 <meta name="description" content="Utafiti wa PhD wa Daud M. Gunda kuhusu kile wanyamapori wenye kwato huchagua kula Tanzania na Hungaria, na programu ya uwandani DaviGherbivores.">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -418,6 +432,14 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
 .lv-alert{background:var(--ochre-soft);color:var(--ochre);border:1px solid var(--ochre);border-radius:10px;padding:6px 10px;font-size:.84rem;font-weight:600}
 .lv-alert[hidden]{display:none!important}
 .lv-moon{font-size:.8rem;color:var(--muted)}
+
+/* ---------- share buttons ---------- */
+.share{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.share .sh-l{font-weight:700;margin-right:4px}
+.share a,.share button{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:.86rem;font-weight:600;text-decoration:none;color:inherit;background:transparent;border:1px solid currentColor;border-radius:999px;padding:6px 12px;cursor:pointer;opacity:.9}
+.share a:hover,.share button:hover{opacity:1}
+.share svg{width:16px;height:16px;fill:currentColor}
+.share .sh-msg{font-size:.82rem;opacity:.8}
 </style>
 <script data-goatcounter="https://davigherbivores.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
@@ -776,7 +798,8 @@ footer .base{border-top:1px solid rgba(255,255,255,.12);padding-block:18px 28px;
     <div><h4>Mradi</h4><ul><li><a href="#app">Programu ya uwandani</a></li><li><a href="#gallery">Picha</a></li><li><a href="#news">Habari na machapisho</a></li><li><a href="#thanks">Shukrani</a></li><li><a href="#contact">Mawasiliano</a></li></ul></div>
     <div><h4>Timu ya uwandani</h4><ul><li><a href="https://davigherbivores.org/davigherbivores/">Fungua DaviGherbivores</a></li></ul></div>
   </div>
-  <div class="wrap base"><span>© 2026 Daud M. Gunda</span><span class="vpill" data-vpill hidden><span data-vwrap="visits" hidden><b data-visits>–</b> ziara</span><span data-vwrap="online" hidden>· <b data-online>–</b> <span data-online-label>wako mtandaoni sasa</span></span></span><span>Picha: Daud M. Gunda na timu ya uwandani</span></div>
+  <div class="wrap" style="padding-block:6px 14px"><div data-share data-label="Shiriki tovuti hii" data-url="https://davigherbivores.org/sw.html" data-text="Wanyamapori wenye kwato huchagua kula nini? Tazama mradi wa utafiti wa DaviGherbivores:"></div></div>
+<div class="wrap base"><span>© 2026 Daud M. Gunda</span><span class="vpill" data-vpill hidden><span data-vwrap="visits" hidden><b data-visits>–</b> ziara</span><span data-vwrap="online" hidden>· <b data-online>–</b> <span data-online-label>wako mtandaoni sasa</span></span></span><span>Picha: Daud M. Gunda na timu ya uwandani</span></div>
 </footer>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Kitazamaji picha">
@@ -1002,8 +1025,8 @@ function quiz(){
   let i=0,score=0;
   const show=()=>{
     if(i>=B1.qs.length){const t=B1.qs.length,line=B1.scorelines[score>=t-1?2:score>=Math.ceil(t/2)?1:0];
-      box.innerHTML=`<div class="qz-end"><div class="big">${score} / ${t}</div><p style="margin:0">${esc(B1.score.replace("{s}",score).replace("{t}",t))}</p><p style="margin:0;color:var(--muted)">${esc(line)}</p><button class="btn pri" type="button" id="qzAgain">${esc(B1.again)}</button></div>`;
-      document.getElementById("qzAgain").onclick=()=>{i=0;score=0;show()};return}
+      box.innerHTML=`<div class="qz-end"><div class="big">${score} / ${t}</div><p style="margin:0">${esc(B1.score.replace("{s}",score).replace("{t}",t))}</p><p style="margin:0;color:var(--muted)">${esc(line)}</p><div id="qzShare" style="justify-content:center;margin:4px 0 8px"></div><button class="btn pri" type="button" id="qzAgain">${esc(B1.again)}</button></div>`;
+      if(window.dgShare)dgShare(document.getElementById("qzShare"),"Nimepata {s}/{t} kwenye jaribio la wanyamapori “Nani amekula hiki?”. Unaweza kunishinda?".replace("{s}",score).replace("{t}",t),"https://davigherbivores.org/sw.html#quiz");document.getElementById("qzAgain").onclick=()=>{i=0;score=0;show()};return}
     const [img,q,opts,ok,why]=B1.qs[i];
     const order=opts.map((o,k)=>k).sort(()=>Math.random()-.5);
     box.innerHTML=`<div class="qz-img"><img src="${pathOf(img)}.jpg" alt=""></div><div class="qz-body"><div class="qz-count">${esc(B1.q_of.replace("{n}",i+1).replace("{t}",B1.qs.length))}</div><p class="qz-q">${esc(q)}</p>
@@ -1055,6 +1078,23 @@ const lsc=document.createElement("script");lsc.src="https://cdnjs.cloudflare.com
     if(!nm||isNaN(pc)||v(f.active)===null&&false)return;if(f.active&&f.active.booleanValue===false)return;
     $("sbPgL").textContent=nm;$("sbPgI").style.width=pc+"%";$("sbPgB").setAttribute("aria-valuenow",pc);$("sbPgN").textContent=pc+"%";$("sbPg").hidden=false;show()}).catch(()=>{});
 })();
+
+/* ---------- share buttons ---------- */
+window.dgShare=function(el,text,url,label){
+  const S={"share": "Shiriki", "copy": "Nakili kiungo", "copied": "Kiungo kimenakiliwa"},I={"wa": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.9-.9-2.8-2.4-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z\"/></svg>", "fb": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M14 8V6.5c0-.7.2-1.2 1.3-1.2H17V2.2C16.6 2.1 15.5 2 14.3 2 11.7 2 10 3.6 10 6.4V8H7v3.5h3V22h4V11.5h3l.5-3.5H14z\"/></svg>", "x": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.3L5.3 21H2.2l7.2-8.3L2 3h6.4l4.4 5.8L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z\"/></svg>", "li": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6V21h-4v-5.2c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4z\"/></svg>"},e=encodeURIComponent,full=text+" "+url;
+  el.classList.add("share");
+  el.innerHTML=(label?`<span class="sh-l">${label}</span>`:"")+
+    `<a href="https://wa.me/?text=${e(full)}" target="_blank" rel="noopener">${I.wa}WhatsApp</a>`+
+    `<a href="https://www.facebook.com/sharer/sharer.php?u=${e(url)}" target="_blank" rel="noopener">${I.fb}Facebook</a>`+
+    `<a href="https://twitter.com/intent/tweet?text=${e(text)}&url=${e(url)}" target="_blank" rel="noopener">${I.x}X</a>`+
+    `<a href="https://www.linkedin.com/sharing/share-offsite/?url=${e(url)}" target="_blank" rel="noopener">${I.li}LinkedIn</a>`+
+    (navigator.share?`<button type="button" data-sh="native">${S.share}…</button>`:"")+
+    `<button type="button" data-sh="copy">${S.copy}</button><span class="sh-msg" aria-live="polite"></span>`;
+  el.onclick=async ev=>{const b=ev.target.closest("button");if(!b)return;
+    if(b.dataset.sh==="native"){try{await navigator.share({title:document.title,text,url})}catch(_){}return}
+    try{await navigator.clipboard.writeText(url);el.querySelector(".sh-msg").textContent=S.copied}catch(_){el.querySelector(".sh-msg").textContent=url}};
+};
+document.querySelectorAll("[data-share]").forEach(el=>dgShare(el,el.dataset.text,el.dataset.url,el.dataset.label));
 </script>
 
 </body>

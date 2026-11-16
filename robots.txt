@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /davigherbivores/
+Disallow: /charity/
+
+Sitemap: https://davigherbivores.org/sitemap.xml

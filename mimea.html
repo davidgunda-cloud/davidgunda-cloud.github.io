@@ -3,6 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://davigherbivores.org/mimea.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DaviGherbivores">
+<meta property="og:title" content="Mwongozo wa Mimea ya Malisho · DaviGherbivores">
+<meta property="og:description" content="Mwongozo wa miti, vichaka, nyasi na mimea midogo zaidi ya 200 ya Makuyuni, Hifadhi ya Taifa ya Arusha na Msitu wa Valkó, pamoja na picha za marejeo.">
+<meta property="og:url" content="https://davigherbivores.org/mimea.html">
+<meta property="og:image" content="https://davigherbivores.org/og-plants.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="sw_TZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mwongozo wa Mimea ya Malisho · DaviGherbivores">
+<meta name="twitter:description" content="Mwongozo wa miti, vichaka, nyasi na mimea midogo zaidi ya 200 ya Makuyuni, Hifadhi ya Taifa ya Arusha na Msitu wa Valkó, pamoja na picha za marejeo.">
+<meta name="twitter:image" content="https://davigherbivores.org/og-plants.jpg">
+<meta name="description" content="Mwongozo wa miti, vichaka, nyasi na mimea midogo zaidi ya 200 ya Makuyuni, Hifadhi ya Taifa ya Arusha na Msitu wa Valkó, pamoja na picha za marejeo.">
 <title>Mwongozo wa Mimea ya Malisho</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Newsreader:ital,opsz,wght@1,6..72,500;1,6..72,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -118,6 +133,14 @@ dialog.pv::backdrop{background:rgba(10,18,12,.55)}
 .visits small{flex-basis:100%;color:var(--muted);font-size:.78rem}
 .vpill{display:inline-flex;gap:10px;align-items:center}
 .vpill[hidden]{display:none!important}
+
+/* ---------- share buttons ---------- */
+.share{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.share .sh-l{font-weight:700;margin-right:4px}
+.share a,.share button{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:.86rem;font-weight:600;text-decoration:none;color:inherit;background:transparent;border:1px solid currentColor;border-radius:999px;padding:6px 12px;cursor:pointer;opacity:.9}
+.share a:hover,.share button:hover{opacity:1}
+.share svg{width:16px;height:16px;fill:currentColor}
+.share .sh-msg{font-size:.82rem;opacity:.8}
 </style>
 <script data-goatcounter="https://davigherbivores.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
@@ -132,6 +155,7 @@ dialog.pv::backdrop{background:rgba(10,18,12,.55)}
   <p class="eyebrow">DaviGherbivores · Mwongozo unaoandaliwa</p>
   <h1>Mwongozo wa Mimea ya Malisho</h1>
   <p class="lede">Miti, vichaka, nyasi na mimea midogo iliyorekodiwa wakati wa kazi ya uwandani kaskazini mwa Tanzania na katika Msitu wa Valkó, Hungaria. Majina ya kisayansi yamehakikiwa dhidi ya majina ya sasa ya kibotania. Picha zitaongezwa.</p>
+  <div data-share data-label="Shiriki mwongozo wa mimea" data-url="https://davigherbivores.org/mimea.html" data-text="Mwongozo wa mimea ya malisho ya Makuyuni, Hifadhi ya Taifa ya Arusha na Msitu wa Valkó:" style="margin-top:14px"></div>
   <div class="ask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><p style="margin:0"><b>Je, unajua jina la Kiswahili au la kienyeji la mmea wowote kati ya mimea hii?</b> Tafadhali tushirikishe kupitia <span class="em">contact@davigherbivores.org</span>, ukitaja mmea husika na lugha au eneo jina hilo linapotumika.</p></div>
   <p class="lede">Mimea ya Valkó iliyowekwa alama <span class="tag exp">Inatarajiwa</span> imeorodheshwa kwa aina hii ya msitu katika mpango wa usimamizi wa Natura 2000 wa Milima ya Gödöllő, au katika ripoti ya Hifadhi ya Taifa ya Duna–Ipoly, na bado haijathibitishwa na timu yetu. Mimea iliyowekwa alama <span class="tag rec">Imerekodiwa</span> imeonekana wakati wa kazi yetu ya uwandani.</p>
 </header>
@@ -277,6 +301,23 @@ document.getElementById("list").addEventListener("keydown", e => { if ((e.key ==
   const add=src=>new Promise((ok,no)=>{const sc=document.createElement("script");sc.src=src;sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
   add("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js").then(()=>add("https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js")).then(presence).catch(()=>{});
 })();
+
+/* ---------- share buttons ---------- */
+window.dgShare=function(el,text,url,label){
+  const S={"share": "Shiriki", "copy": "Nakili kiungo", "copied": "Kiungo kimenakiliwa"},I={"wa": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.9-.9-2.8-2.4-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z\"/></svg>", "fb": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M14 8V6.5c0-.7.2-1.2 1.3-1.2H17V2.2C16.6 2.1 15.5 2 14.3 2 11.7 2 10 3.6 10 6.4V8H7v3.5h3V22h4V11.5h3l.5-3.5H14z\"/></svg>", "x": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.3L5.3 21H2.2l7.2-8.3L2 3h6.4l4.4 5.8L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z\"/></svg>", "li": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6V21h-4v-5.2c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4z\"/></svg>"},e=encodeURIComponent,full=text+" "+url;
+  el.classList.add("share");
+  el.innerHTML=(label?`<span class="sh-l">${label}</span>`:"")+
+    `<a href="https://wa.me/?text=${e(full)}" target="_blank" rel="noopener">${I.wa}WhatsApp</a>`+
+    `<a href="https://www.facebook.com/sharer/sharer.php?u=${e(url)}" target="_blank" rel="noopener">${I.fb}Facebook</a>`+
+    `<a href="https://twitter.com/intent/tweet?text=${e(text)}&url=${e(url)}" target="_blank" rel="noopener">${I.x}X</a>`+
+    `<a href="https://www.linkedin.com/sharing/share-offsite/?url=${e(url)}" target="_blank" rel="noopener">${I.li}LinkedIn</a>`+
+    (navigator.share?`<button type="button" data-sh="native">${S.share}…</button>`:"")+
+    `<button type="button" data-sh="copy">${S.copy}</button><span class="sh-msg" aria-live="polite"></span>`;
+  el.onclick=async ev=>{const b=ev.target.closest("button");if(!b)return;
+    if(b.dataset.sh==="native"){try{await navigator.share({title:document.title,text,url})}catch(_){}return}
+    try{await navigator.clipboard.writeText(url);el.querySelector(".sh-msg").textContent=S.copied}catch(_){el.querySelector(".sh-msg").textContent=url}};
+};
+document.querySelectorAll("[data-share]").forEach(el=>dgShare(el,el.dataset.text,el.dataset.url,el.dataset.label));
 </script>
 
 </body>
