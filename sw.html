@@ -1015,7 +1015,7 @@ function initMap(){
   const map=L.map(el,{scrollWheelZoom:false,worldCopyJump:true}).setView([10,20],3);
   const osm=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
   const satDay=new Date(Date.now()-864e5).toISOString().slice(0,10);
-  const sat=L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/"+satDay+"/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",{maxNativeZoom:9,maxZoom:17,attribution:'Imagery: <a href="https://earthdata.nasa.gov" target="_blank" rel="noopener">NASA EOSDIS GIBS</a> '+satDay});
+  const sat=L.tileLayer("https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_NOAA20_CorrectedReflectance_TrueColor/default/"+satDay+"/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",{maxNativeZoom:9,maxZoom:17,attribution:'Imagery: <a href="https://earthdata.nasa.gov" target="_blank" rel="noopener">NASA EOSDIS GIBS</a> '+satDay});
   L.control.layers({"Ramani":osm,"Picha ya satelaiti":sat},null,{collapsed:false,position:"topright"}).addTo(map);
   map.on("baselayerchange",e=>{const n=document.querySelector(".mapnote");if(n){n.dataset.base=n.dataset.base||n.textContent;n.textContent=e.layer===sat?"Picha ya satelaiti ya NASA ya tarehe {d}. Mawingu yanaweza kuficha ardhi.".replace("{d}",satDay):n.dataset.base}});
   const col=getComputedStyle(document.documentElement).getPropertyValue("--acacia").trim()||"#3f7d4a";
@@ -1154,7 +1154,7 @@ async function extras(card){const k=card.dataset.site,s=SITES[k];if(!s)return;co
       out.push(`<div class="row2"><b>${X.soil}</b><span>${X.soilL[lv]} · ${sm.toFixed(2)} m³/m³</span></div><div class="meter" role="img" aria-label="${X.soil}: ${X.soilL[lv]}"><i style="width:${pc}%"></i></div>`)}
     const et=j.daily.et0_fao_evapotranspiration[0];if(et!=null)out.push(`<div class="row2"><span>${X.et0}</span><b>${et.toFixed(1)} mm</b></div>`)}catch(e){}
   if(s.tz&&FIRMS_KEY){try{const d=.28,bb=[s.lon-d,s.lat-d,s.lon+d,s.lat+d].map(v=>v.toFixed(2)).join(",");
-      const txt=await (await get(`https://firms.modaps.eosdis.nasa.gov/api/area/csv/${FIRMS_KEY}/VIIRS_SNPP_NRT/${bb}/2`)).text();
+      const txt=await (await get(`https://firms.modaps.eosdis.nasa.gov/api/area/csv/${FIRMS_KEY}/VIIRS_NOAA20_NRT/${bb}/2`)).text();
       if(!/^latitude/i.test(txt.trim()))throw 0;const n=Math.max(0,txt.trim().split("\n").length-1);
       out.push(n?`<div class="fire">🔥 ${X.fire.replace("{n}",n).replace("{s}",n===1?"":"s")}</div>`:`<div class="fire ok">✓ ${X.nofire}</div>`)}catch(e){}}
   if(!s.tz){try{const j=await (await get("https://air-quality-api.open-meteo.com/v1/air-quality?"+new URLSearchParams({latitude:s.lat,longitude:s.lon,current:"european_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,ragweed_pollen",timezone:"auto"}))).json();
